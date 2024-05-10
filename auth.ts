@@ -1,4 +1,5 @@
 import { getUser } from '@/app/db';
+import { authConfig } from '@/auth.config';
 import { compare } from 'bcrypt-ts';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
@@ -9,9 +10,7 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  pages: {
-    signIn: '/login',
-  },
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -48,19 +47,4 @@ export const {
       },
     }),
   ],
-  callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      let isLoggedIn = !!auth?.user;
-      let isOnNotes = nextUrl.pathname.startsWith('/notes');
-
-      if (isOnNotes) {
-        if (isLoggedIn) return true;
-        return Response.redirect(new URL('/login', nextUrl)); // Redirect unauthenticated users to login page
-      } else if (isLoggedIn) {
-        return Response.redirect(new URL('/notes', nextUrl));
-      }
-
-      return true;
-    },
-  },
 });
