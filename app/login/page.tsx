@@ -1,7 +1,7 @@
+import { LoginForm } from "@/app/loginForm";
+import { SubmitButton } from "@/app/submitButton";
+import { signIn } from "@/auth";
 import { redirect } from "next/navigation";
-import { signIn } from "../auth";
-import { LoginForm } from "../loginForm";
-import { SubmitButton } from "../submitButton";
 
 export default function Login() {
   return (
