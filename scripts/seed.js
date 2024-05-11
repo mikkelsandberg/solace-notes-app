@@ -2,7 +2,7 @@ const { db } = require('@vercel/postgres');
 const {
   users,
   notes,
-} = require('../app/lib/placeholder-data.js');
+} = require('./placeholder-data.js');
 const bcrypt = require('bcrypt');
 
 async function seedUsers(client) {
@@ -52,7 +52,9 @@ async function seedNotes(client) {
       CREATE TABLE IF NOT EXISTS notes (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         user_id UUID NOT NULL,
-        content VARCHAR(300) NOT NULL
+        content VARCHAR(300) NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
       );
     `;
 

@@ -19,5 +19,12 @@ export const authConfig = {
 
       return true;
     },
+    session: ({ session, token }) => ({
+      ...session,
+      user: {
+        ...session.user,
+        id: token.sub,
+      },
+    }),
   },
 } satisfies NextAuthConfig;

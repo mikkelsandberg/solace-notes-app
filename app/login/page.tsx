@@ -1,5 +1,6 @@
 'use client';
 
+import { login } from '@/app/utils/authUtils';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -10,7 +11,6 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { getSession } from 'next-auth/react';
 import { useState } from 'react';
-import { handleLogin } from './loginUtils';
 
 export default function LogIn() {
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function LogIn() {
       setError(null);
       setLoading(true);
   
-      await handleLogin(formData);
+      await login(formData);
   
       setLoading(false);
     } catch (error) {

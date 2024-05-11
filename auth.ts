@@ -1,5 +1,5 @@
-import { getUser } from '@/app/db';
 import { authConfig } from '@/auth.config';
+import { getUser } from '@/db/schema/users';
 import { compare } from 'bcrypt-ts';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
