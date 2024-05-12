@@ -1,6 +1,7 @@
 'use client';
 
 import { useLoggedInUser } from '@/app/hooks/authHooks';
+import LoadingCards from '@/app/notes/loadingCards';
 import NoteCard from '@/app/notes/noteCard';
 import UpsertNoteForm from '@/app/notes/upsertNoteForm';
 import { logout } from '@/app/utils/authUtils';
@@ -80,19 +81,22 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function Notes() {
   const { user } = useLoggedInUser();
   const [open, setOpen] = useState(false);
-  // const [userId, setUserId] = useState<string | null>(null);
   const [notes, setNotes] = useState([] as Note[]);
+  const [loading, setLoading] = useState(true);
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
   const getNotes = useCallback(async () => {
+    setLoading(true);
+
     const userId = user?.id;
 
     if (userId) {
       const notes = await getAllNotesForUser(userId);
       setNotes(notes);
+      setLoading(false);
     }
   }, [user]);
 
@@ -181,21 +185,24 @@ export default function Notes() {
                 <CardContent>
                   <Typography>Quick Add</Typography>
 
-                  {user?.id && (
-                    <UpsertNoteForm afterSubmit={() => getNotes()} />
-                  )}
+                  <UpsertNoteForm disabled={loading} afterSubmit={() => getNotes()} />
                 </CardContent>
               </Card>
             </Grid>
             {
-              notes.map(note => (
-                <NoteCard
-                  key={note.id}
-                  note={note}
-                  onNoteDelete={getNotes}
-                  onUpsertNote={getNotes}
-                />
-              ))
+              loading ? (
+                <LoadingCards />
+              ) : (
+                notes.map(note => (
+                  <Grid key={note.id} item xs={6} md={4} lg={3}>
+                    <NoteCard
+                      note={note}
+                      onNoteDelete={getNotes}
+                      onUpsertNote={getNotes}
+                    />
+                  </Grid>
+                ))
+              )
             }
           </Grid>
         </Container>

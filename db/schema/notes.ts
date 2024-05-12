@@ -23,7 +23,9 @@ export async function createNoteForUser(userId: string, content: string) {
 }
 
 export async function updateNoteById(id: number, content: string) {
-  await db.update(notes).set({content}).where(eq(notes.id, id));
+  const now = new Date();
+  
+  await db.update(notes).set({content, updatedAt: now}).where(eq(notes.id, id));
 }
 
 export async function deleteNoteById(id: number) {

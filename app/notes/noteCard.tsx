@@ -27,31 +27,33 @@ export default function NoteCard({ note, onNoteDelete, onUpsertNote }: NoteCardP
 
   return (
     <>
-      <Grid item xs={6} md={4} lg={3}>
-        <Card
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            height: 240,
-          }}
-        >
-          <CardContent>
-            <Typography>{note.content}</Typography>
-          </CardContent>
+      <Card
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: 240,
+        }}
+      >
+        <CardContent>
+          <Typography
+            sx={{
+              wordBreak: 'break-word',
+            }}
+          >{note.content}</Typography>
+        </CardContent>
 
-          <CardActions sx={{
-            justifyContent: 'flex-end',
-          }}>
-            <IconButton onClick={() => editNote(note)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => deleteNote(note.id)}>
-              <DeleteIcon />
-            </IconButton>
-          </CardActions>
-        </Card>
-      </Grid>
+        <CardActions sx={{
+          justifyContent: 'flex-end',
+        }}>
+          <IconButton onClick={() => editNote(note)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => deleteNote(note.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </CardActions>
+      </Card>
 
       <UpsertNoteDialog
         note={noteToEdit}
