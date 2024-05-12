@@ -1,33 +1,44 @@
-import { createNoteForUser } from '@/db/schema/notes';
+import { useLoggedInUser } from '@/app/hooks/authHooks';
+import { createNoteForUser, Note } from '@/db/schema/notes';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { getSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 
-interface NewNoteFormProps {
+interface UpsertNoteFormProps {
+  note?: Note | null;
   afterSubmit: () => void;
-  userId: string;
 }
 
-interface NewNoteFormValues {
+interface UpsertNoteFormValues {
   content: string;
 }
 
-export default function NewNoteForm({ afterSubmit, userId }: NewNoteFormProps) {
+export default function UpsertNoteForm({ note, afterSubmit }: UpsertNoteFormProps) {
+  const { user } = useLoggedInUser();
+
   const validationSchema = Yup.object().shape({
     content: Yup.string().min(20).max(300).required('Content is required'),
   });
-  const formOptions = { resolver: yupResolver(validationSchema) };
+  const formOptions = {
+    resolver: yupResolver(validationSchema),
+  };
 
-  const { register, handleSubmit, reset, watch, formState } = useForm(formOptions);
+  const { register, handleSubmit, reset } = useForm({
+    ...formOptions,
+    defaultValues: {
+      content: note?.content || '',
+    }
+  });
 
-  const { errors } = formState;
+  const onSubmit = async (formValues: UpsertNoteFormValues) => {
+    const userId = user?.id;
 
-  const onSubmit = async (formValues: NewNoteFormValues) => {
-    console.log(errors);
-    console.log('formValues', formValues);
+    if (!userId) {
+      throw new Error('User not found');
+    }
+
     await createNoteForUser(userId, formValues.content);
     afterSubmit();
     reset({ content: '' });

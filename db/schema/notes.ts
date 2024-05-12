@@ -1,8 +1,8 @@
 'use server';
 
-import { pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { db } from '@/db/dbConfig';
 import { desc, eq } from 'drizzle-orm';
+import { pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 const notes = pgTable('notes', {
   id: serial('id').primaryKey(),
@@ -20,4 +20,12 @@ export async function getAllNotesForUser(userId: string) {
 
 export async function createNoteForUser(userId: string, content: string) {
   await db.insert(notes).values({userId, content});
+}
+
+export async function updateNoteById(id: number, content: string) {
+  await db.update(notes).set({content}).where(eq(notes.id, id));
+}
+
+export async function deleteNoteById(id: number) {
+  await db.delete(notes).where(eq(notes.id, id));
 }

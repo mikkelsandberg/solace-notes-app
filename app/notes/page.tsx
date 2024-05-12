@@ -1,10 +1,14 @@
 'use client';
 
+import { useLoggedInUser } from '@/app/hooks/authHooks';
+import NoteCard from '@/app/notes/noteCard';
+import UpsertNoteForm from '@/app/notes/upsertNoteForm';
 import { logout } from '@/app/utils/authUtils';
 import { getAllNotesForUser, Note } from '@/db/schema/notes';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
+import { Card, CardContent } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -17,13 +21,11 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { getSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
-import NewNoteForm from './newNoteForm';
 
 const drawerWidth: number = 240;
 
@@ -76,8 +78,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 export default function Notes() {
+  const { user } = useLoggedInUser();
   const [open, setOpen] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  // const [userId, setUserId] = useState<string | null>(null);
   const [notes, setNotes] = useState([] as Note[]);
 
   const toggleDrawer = () => {
@@ -85,20 +88,19 @@ export default function Notes() {
   };
 
   const getNotes = useCallback(async () => {
+    const userId = user?.id;
+
     if (userId) {
       const notes = await getAllNotesForUser(userId);
       setNotes(notes);
     }
-  }, [userId]);
+  }, [user]);
 
   useEffect(() => {
-    getSession().then(authSession => {
-      if (authSession?.user?.id) {
-        setUserId(authSession.user.id);
-        getNotes();
-      }
-    });
-  }, [getNotes]);
+    if (user?.id) {
+      getNotes();
+    }
+  }, [user, getNotes]);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -171,36 +173,33 @@ export default function Notes() {
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Grid container spacing={3}>
             <Grid item xs={6} md={4} lg={3}>
-              <Paper
+              <Card
                 sx={{
-                  p: 2,
                   height: 240,
                 }}
               >
-                <Typography>Quick Add</Typography>
+                <CardContent>
+                  <Typography>Quick Add</Typography>
 
-                {userId && (
-                  <NewNoteForm afterSubmit={() => getNotes()} userId={userId} />
-                )}
-              </Paper>
+                  {user?.id && (
+                    <UpsertNoteForm afterSubmit={() => getNotes()} />
+                  )}
+                </CardContent>
+              </Card>
             </Grid>
             {
               notes.map(note => (
-                <Grid key={note.id} item xs={6} md={4} lg={3}>
-                  <Paper
-                    sx={{
-                      p: 2,
-                      height: 240,
-                    }}
-                  >
-                    <Typography>{note.content}</Typography>
-                  </Paper>
-                </Grid>
+                <NoteCard
+                  key={note.id}
+                  note={note}
+                  onNoteDelete={getNotes}
+                  onUpsertNote={getNotes}
+                />
               ))
             }
           </Grid>
         </Container>
       </Box>
-    </Box >
+    </Box>
   );
 }
