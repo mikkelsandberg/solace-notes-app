@@ -14,33 +14,33 @@ export const {
   providers: [
     Credentials({
       credentials: {
-        email: {},
+        username: {},
         password: {},
       },
       authorize: async (credentials) => {
         let user = null;
-        const {email, password} = credentials;
+        const {username, password} = credentials;
 
-        if (!email) {
-          throw new Error('email is required');
-        } else if (typeof email !== 'string') {
-          throw new Error('email is invalid');
+        if (!username) {
+          throw new Error('username is required');
+        } else if (typeof username !== 'string') {
+          throw new Error('username is invalid');
         } else if (!password) {
           throw new Error('password is required');
         } else if (typeof password !== 'string') {
           throw new Error('password is invalid');
         }
 
-        user = await getUser(email);
+        user = await getUser(username);
         
         if (user.length === 0) {
-          throw new Error('email and password do not match');
+          throw new Error('username and password do not match');
         }
         
         const passwordsMatch = await compare(password, user[0].password!);
         
         if (!passwordsMatch) {
-          throw new Error('email and password do not match');
+          throw new Error('username and password do not match');
         }
 
         return user[0] as any;

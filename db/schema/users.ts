@@ -5,20 +5,20 @@ import { pgTable, serial, varchar } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
-  name: varchar('name', { length: 64 }).notNull(),
-  email: varchar('email', { length: 64 }).notNull().unique(),
+  username: varchar('username', { length: 64 }).notNull().unique(),
+  displayName: varchar('display_name', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }).notNull(),
 });
 
 export type User = typeof users.$inferSelect;
 
-export async function getUser(email: string) {
-  return await db.select().from(users).where(eq(users.email, email));
+export async function getUser(username: string) {
+  return await db.select().from(users).where(eq(users.username, username));
 }
 
-export async function createUser(name: string, email: string, password: string) {
+export async function createUser(username: string, displayName: string, password: string) {
   let salt = genSaltSync(10);
   let hash = hashSync(password, salt);
 
-  return await db.insert(users).values({name, email, password: hash });
+  return await db.insert(users).values({username, displayName, password: hash });
 }

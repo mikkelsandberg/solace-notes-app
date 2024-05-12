@@ -1,8 +1,8 @@
 const users = [
   {
     id: '1583fb97-028c-4d0a-a409-60f709a59ae9',
-    name: 'User',
-    email: 'user@test.com',
+    username: 'solace-user',
+    displayName: 'Solace User',
     password: 'test123',
   },
 ];

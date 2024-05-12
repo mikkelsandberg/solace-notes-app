@@ -5,7 +5,7 @@ import { signIn, signOut } from '@/auth';
 export const login = async (formData: FormData) => {
   await signIn('credentials', {
     redirectTo: '/notes',
-    email: formData.get('email') as string,
+    username: formData.get('username') as string,
     password: formData.get('password') as string,
   });
 };

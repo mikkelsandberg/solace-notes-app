@@ -2,6 +2,9 @@
 
 import { login } from '@/app/utils/authUtils';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { IconButton, InputAdornment } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,6 +18,7 @@ import { useState } from 'react';
 export default function LogIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
     await getSession();
@@ -22,12 +26,12 @@ export default function LogIn() {
     try {
       setError(null);
       setLoading(true);
-  
+
       await login(formData);
-  
+
       setLoading(false);
     } catch (error) {
-      setError('Incorrect email or password. Please try again.');
+      setError('Incorrect username or password. Please try again.');
       setLoading(false);
     }
   };
@@ -55,9 +59,9 @@ export default function LogIn() {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
+              id="username"
+              label="Username"
+              name="username"
               autoFocus
             />
             <TextField
@@ -66,8 +70,20 @@ export default function LogIn() {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {!showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             {error && <Typography color="error">{error}</Typography>}
             <Button
@@ -77,7 +93,7 @@ export default function LogIn() {
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
             >
-              {loading ? 'Loading' : 'Login' }
+              {loading ? 'Loading' : 'Login'}
             </Button>
           </form>
         </Box>
