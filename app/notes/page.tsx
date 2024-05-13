@@ -1,16 +1,17 @@
 'use client';
 
 import { useLoggedInUser } from '@/app/hooks/authHooks';
+import BlankStateCard from '@/app/notes/blankStateCard';
 import LoadingCards from '@/app/notes/loadingCards';
 import NoteCard from '@/app/notes/noteCard';
 import SearchBar from '@/app/notes/searchBar';
-import UpsertNoteForm from '@/app/notes/upsertNoteForm';
+import UpsertNoteDialog from '@/app/notes/upsertNoteDialog';
 import { logout } from '@/app/utils/authUtils';
 import { getAllNotesForUser, Note } from '@/db/schema/notes';
+import AddIcon from '@mui/icons-material/Add';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Card, CardContent } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -26,7 +27,6 @@ import ListItemText from '@mui/material/ListItemText';
 import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { getSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
 
 const drawerWidth: number = 240;
@@ -81,12 +81,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function Notes() {
   const { loadingUser, user } = useLoggedInUser();
-  const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [addNoteDialogOpen, setAddNoteDialogOpen] = useState(false);
   const [notes, setNotes] = useState([] as Note[]);
   const [loading, setLoading] = useState(true);
 
   const toggleDrawer = () => {
-    setOpen(!open);
+    setDrawerOpen(!drawerOpen);
   };
 
   const getNotes = useCallback(async () => {
@@ -110,20 +111,21 @@ export default function Notes() {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="absolute" open={open}>
+      <AppBar position="absolute" open={drawerOpen}>
         <Toolbar
           sx={{
             pr: '24px',
           }}
         >
           <IconButton
+            aria-label="open drawer"
+            title="Open Drawer"
             edge="start"
             color="inherit"
-            aria-label="open drawer"
             onClick={toggleDrawer}
             sx={{
               marginRight: '36px',
-              ...(open && { display: 'none' }),
+              ...(drawerOpen && { display: 'none' }),
             }}
           >
             <MenuIcon />
@@ -137,9 +139,18 @@ export default function Notes() {
           >
             Notes
           </Typography>
+          <IconButton
+            aria-label="add note"
+            title="Add Note"
+            edge="end"
+            color="inherit"
+            onClick={() => setAddNoteDialogOpen(true)}
+          >
+            <AddIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
+      <Drawer variant="permanent" open={drawerOpen}>
         <Toolbar
           sx={{
             display: 'flex',
@@ -148,14 +159,20 @@ export default function Notes() {
             px: [1],
           }}
         >
-          <IconButton onClick={toggleDrawer}>
+          <IconButton
+            aria-label="close drawer"
+            onClick={toggleDrawer}
+          >
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
         <Divider />
         <List component="nav">
-          <ListItemButton onClick={() => logout()}>
-            <ListItemIcon>
+          <ListItemButton
+            aria-label="logout"
+            onClick={() => logout()}
+          >
+            <ListItemIcon title="Logout">
               <LogoutIcon />
             </ListItemIcon>
             <ListItemText primary="Logout" />
@@ -185,37 +202,36 @@ export default function Notes() {
           <Box sx={{ mb: 4 }} />
 
           <Grid container spacing={3}>
-            <Grid item xs={6} md={4} lg={3}>
-              <Card
-                sx={{
-                  height: 240,
-                }}
-              >
-                <CardContent>
-                  <Typography>Quick Add</Typography>
-
-                  <UpsertNoteForm disabled={loading} afterSubmit={() => getNotes()} />
-                </CardContent>
-              </Card>
-            </Grid>
             {
               loading ? (
                 <LoadingCards />
-              ) : (
-                notes.map(note => (
-                  <Grid key={note.id} item xs={6} md={4} lg={3}>
-                    <NoteCard
-                      note={note}
-                      onNoteDelete={getNotes}
-                      onUpsertNote={getNotes}
-                    />
-                  </Grid>
-                ))
-              )
+              ) : notes.length === 0
+                ? (
+                  <BlankStateCard />
+                ) : (
+                  notes.map(note => (
+                    <Grid key={note.id} item xs={6} md={4} lg={3}>
+                      <NoteCard
+                        note={note}
+                        onNoteDelete={getNotes}
+                        onUpsertNote={getNotes}
+                      />
+                    </Grid>
+                  ))
+                )
             }
           </Grid>
         </Container>
       </Box>
+
+      <UpsertNoteDialog
+        handleClose={() => setAddNoteDialogOpen(false)}
+        handleUpsertNote={() => {
+          setAddNoteDialogOpen(false);
+          getNotes();
+        }}
+        isOpen={addNoteDialogOpen}
+      />
     </Box>
   );
 }

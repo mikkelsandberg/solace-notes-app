@@ -1,8 +1,6 @@
 import UpsertNoteDialog from '@/app/notes/upsertNoteDialog';
 import { deleteNoteById, Note } from '@/db/schema/notes';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import { Card, CardActions, CardContent, Grid, IconButton, Typography } from '@mui/material';
+import { Card, CardContent, Typography } from '@mui/material';
 import { useState } from 'react';
 
 interface NoteCardProps {
@@ -33,32 +31,30 @@ export default function NoteCard({ note, onNoteDelete, onUpsertNote }: NoteCardP
           flexDirection: 'column',
           justifyContent: 'space-between',
           height: 240,
+          cursor: 'pointer',
         }}
+        onClick={() => editNote(note)}
       >
-        <CardContent>
+        <CardContent
+          sx={{
+            maxHeight: '100%',
+            overflow: 'auto',
+          }}
+        >
           <Typography
             sx={{
               wordBreak: 'break-word',
             }}
-          >{note.content}</Typography>
+            dangerouslySetInnerHTML={{ __html: note.content }}
+          />
         </CardContent>
-
-        <CardActions sx={{
-          justifyContent: 'flex-end',
-        }}>
-          <IconButton onClick={() => editNote(note)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={() => deleteNote(note.id)}>
-            <DeleteIcon />
-          </IconButton>
-        </CardActions>
       </Card>
 
       <UpsertNoteDialog
         note={noteToEdit}
-        onClose={() => setEditNoteDialogOpen(false)}
-        onUpsertNote={onUpsertNote}
+        handleClose={() => setEditNoteDialogOpen(false)}
+        handleUpsertNote={onUpsertNote}
+        handleDeleteNote={deleteNote}
         isOpen={editNoteDialogOpen}
       />
     </>

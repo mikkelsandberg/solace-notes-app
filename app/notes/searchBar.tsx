@@ -3,7 +3,6 @@ import { Note, searchNotesForUser } from '@/db/schema/notes';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { Button, Card, CardContent, Grid, IconButton, TextField } from '@mui/material';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 
@@ -75,6 +74,8 @@ export default function SearchBar({ onLoadingResults, onSearchResult, onClearSea
                 InputProps={{
                   endAdornment: (
                     <IconButton
+                      aria-label="clear search"
+                      title="Clear Search"
                       disabled={loadingUser || formState.isSubmitting}
                       onClick={onReset}
                     >
