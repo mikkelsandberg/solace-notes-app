@@ -3,6 +3,7 @@
 import { useLoggedInUser } from '@/app/hooks/authHooks';
 import LoadingCards from '@/app/notes/loadingCards';
 import NoteCard from '@/app/notes/noteCard';
+import SearchBar from '@/app/notes/searchBar';
 import UpsertNoteForm from '@/app/notes/upsertNoteForm';
 import { logout } from '@/app/utils/authUtils';
 import { getAllNotesForUser, Note } from '@/db/schema/notes';
@@ -79,7 +80,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 export default function Notes() {
-  const { user } = useLoggedInUser();
+  const { loadingUser, user } = useLoggedInUser();
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState([] as Note[]);
   const [loading, setLoading] = useState(true);
@@ -93,18 +94,18 @@ export default function Notes() {
 
     const userId = user?.id;
 
-    if (userId) {
+    if (!loadingUser && userId) {
       const notes = await getAllNotesForUser(userId);
       setNotes(notes);
       setLoading(false);
     }
-  }, [user]);
+  }, [loadingUser, user?.id]);
 
   useEffect(() => {
-    if (user?.id) {
+    if (!loadingUser && user?.id) {
       getNotes();
     }
-  }, [user, getNotes]);
+  }, [user, getNotes, loadingUser]);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -175,6 +176,14 @@ export default function Notes() {
       >
         <Toolbar />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <SearchBar
+            onLoadingResults={setLoading}
+            onClearSearch={getNotes}
+            onSearchResult={setNotes}
+          />
+
+          <Box sx={{ mb: 4 }} />
+
           <Grid container spacing={3}>
             <Grid item xs={6} md={4} lg={3}>
               <Card

@@ -13,7 +13,7 @@ async function seedUsers(client) {
       CREATE TABLE IF NOT EXISTS users (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         username TEXT NOT NULL UNIQUE,
-        display_name VARCHAR(255) NOT NULL,
+        display_name TEXT NOT NULL,
         password TEXT NOT NULL
       );
     `;

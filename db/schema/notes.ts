@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db/dbConfig';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq, ilike, or, sql } from 'drizzle-orm';
 import { pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 const notes = pgTable('notes', {
@@ -18,14 +18,24 @@ export async function getAllNotesForUser(userId: string) {
   return await db.select().from(notes).where(eq(notes.userId, userId)).orderBy(desc(notes.updatedAt));
 }
 
+export async function searchNotesForUser(userId: string, query: string) {
+  return await db.select().from(notes).where(and(
+    eq(notes.userId, userId),
+    or(
+      sql`to_tsvector(${notes.content}) @@ to_tsquery(${query.split(' ').join(' & ')})`,
+      ilike(notes.content, `%${query}%`),
+    ),
+  )).orderBy(desc(notes.updatedAt));
+}
+
 export async function createNoteForUser(userId: string, content: string) {
-  await db.insert(notes).values({userId, content});
+  await db.insert(notes).values({ userId, content });
 }
 
 export async function updateNoteById(id: number, content: string) {
   const now = new Date();
-  
-  await db.update(notes).set({content, updatedAt: now}).where(eq(notes.id, id));
+
+  await db.update(notes).set({ content, updatedAt: now }).where(eq(notes.id, id));
 }
 
 export async function deleteNoteById(id: number) {

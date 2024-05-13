@@ -1,3 +1,5 @@
+'use client';
+
 import { useLoggedInUser } from '@/app/hooks/authHooks';
 import { createNoteForUser, Note, updateNoteById } from '@/db/schema/notes';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -74,7 +76,6 @@ export default function UpsertNoteForm({ note, disabled, afterSubmit }: UpsertNo
         id="content"
         label="Note"
         name="content"
-        autoFocus
         multiline
         minRows={2}
         maxRows={3}
