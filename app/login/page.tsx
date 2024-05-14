@@ -76,7 +76,8 @@ export default function LogIn() {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      aria-label="toggle password visibility"
+                      aria-label={showPassword ? 'hide password' : 'show password'}
+                      title={showPassword ? 'Hide Password' : 'Show Password'}
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {!showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}

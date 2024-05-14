@@ -1,3 +1,4 @@
+import '@/app/notes/noteCard.scss';
 import UpsertNoteDialog from '@/app/notes/upsertNoteDialog';
 import { deleteNoteById, Note } from '@/db/schema/notes';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,23 +29,13 @@ export default function NoteCard({ note, onNoteDelete, onUpsertNote }: NoteCardP
   return (
     <>
       <Card
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          height: 240,
-        }}
+        className="note-card"
       >
         <CardContent
-          sx={{
-            maxHeight: '100%',
-            overflow: 'auto',
-          }}
+          className="note-card-content"
         >
           <Typography
-            sx={{
-              wordBreak: 'break-word',
-            }}
+            className="note-card-text"
             dangerouslySetInnerHTML={{ __html: note.content }}
           />
         </CardContent>
@@ -52,10 +43,18 @@ export default function NoteCard({ note, onNoteDelete, onUpsertNote }: NoteCardP
         <CardActions sx={{
           justifyContent: 'flex-end',
         }}>
-          <IconButton onClick={() => editNote(note)}>
+          <IconButton
+            aria-label="edit note"
+            title="Edit Note"
+            onClick={() => editNote(note)}
+          >
             <EditIcon />
           </IconButton>
-          <IconButton onClick={() => deleteNote(note.id)}>
+          <IconButton
+            aria-label="delete note"
+            title="Delete Note"
+            onClick={() => deleteNote(note.id)}
+          >
             <DeleteIcon />
           </IconButton>
         </CardActions>

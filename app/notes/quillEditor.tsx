@@ -1,3 +1,4 @@
+import '@/app/notes/quillEditor.scss';
 import { getNormalizedCharacterCount } from '@/app/utils/notesUtils';
 import { useRef } from 'react';
 import { UseFormSetValue } from 'react-hook-form';

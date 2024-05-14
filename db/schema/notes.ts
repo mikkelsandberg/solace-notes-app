@@ -23,7 +23,7 @@ export async function searchNotesForUser(userId: string, query: string) {
   return await db.select().from(notes).where(and(
     eq(notes.userId, userId),
     or(
-      sql`to_tsvector(${notes.content}) @@ to_tsquery(${query.split(' ').join(' & ')})`,
+      sql`to_tsvector(${notes.content}) @@ to_tsquery(${query.trim().split(' ').join(' & ')})`,
       ilike(notes.content, `%${query}%`),
     ),
   )).orderBy(desc(notes.updatedAt));

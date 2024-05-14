@@ -22,7 +22,7 @@ interface UpsertNoteFormValues {
 export default function UpsertNoteForm({ note, disabled, afterSubmit }: UpsertNoteFormProps) {
   const QuillEditor = useMemo(() => dynamic(() => import('@/app/notes/quillEditor'), {
     loading: () => (
-      <Skeleton variant="rectangular" height={90} />
+      <Skeleton variant="rectangular" animation="wave" height={164} />
     ), ssr: false
   }), []);
 
@@ -52,7 +52,7 @@ export default function UpsertNoteForm({ note, disabled, afterSubmit }: UpsertNo
 
   const { handleSubmit, getValues, setValue } = useForm({
     ...formOptions,
-    mode: 'onBlur',
+    mode: 'onSubmit',
     defaultValues: {
       content: note?.content || '',
     }

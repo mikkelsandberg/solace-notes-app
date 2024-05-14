@@ -2,7 +2,7 @@ import { useLoggedInUser } from '@/app/hooks/authHooks';
 import { Note, searchNotesForUser } from '@/db/schema/notes';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { Button, Card, CardContent, Grid, IconButton, TextField } from '@mui/material';
+import { Button, Card, CardContent, FormHelperText, Grid, IconButton, TextField } from '@mui/material';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
@@ -29,9 +29,9 @@ export default function SearchBar({ onLoadingResults, onSearchResult, onClearSea
     resolver: yupResolver(validationSchema),
   };
 
-  const { register, handleSubmit, reset, formState, watch } = useForm({
+  const { register, handleSubmit, reset, formState, watch, setError } = useForm({
     ...formOptions,
-    mode: 'all',
+    mode: 'onSubmit',
     defaultValues: {
       searchText,
     }
@@ -63,16 +63,21 @@ export default function SearchBar({ onLoadingResults, onSearchResult, onClearSea
     reset({ searchText });
   }, [reset, searchText]);
 
+  useEffect(() => {
+    setError('searchText', {});
+  }, [setError]);
+
   return (
     <Card>
       <CardContent>
         <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
-            <Grid item xs={10}>
+            <Grid item sm={10} xs={8}>
               <TextField
                 {...register('searchText')}
+                size="small"
                 disabled={loadingUser || formState.isSubmitting}
-                margin="normal"
+                margin="none"
                 fullWidth
                 id="searchText"
                 label="Search"
@@ -93,15 +98,21 @@ export default function SearchBar({ onLoadingResults, onSearchResult, onClearSea
                   )
                 }}
               />
+
+              {
+                formState.errors.searchText?.message && (
+                  <FormHelperText error>{formState.errors.searchText.message}</FormHelperText>
+                )
+              }
             </Grid>
 
-            <Grid item xs={2}>
+            <Grid item sm={2} xs={4}>
               <Button
                 disabled={loadingUser || formState.isSubmitting}
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ p: 1 }}
               >
                 Search
               </Button>
