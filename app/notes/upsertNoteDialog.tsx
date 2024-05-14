@@ -34,6 +34,7 @@ export default function UpsertNoteDialog({ note, handleClose, handleUpsertNote, 
               fullWidth
               variant="outlined"
               color="error"
+              sx={{ mt: 2 }}
               onClick={() => {
                 handleDeleteNote(note.id);
                 handleClose();

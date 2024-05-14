@@ -1,6 +1,10 @@
 import { Card, CardContent, Grid, Typography } from '@mui/material';
 
-export default function BlankStateCard() {
+interface BlankStateCardProps {
+  variant?: 'no notes' | 'empty search';
+}
+
+export default function BlankStateCard({ variant = 'no notes' }: BlankStateCardProps) {
   return (
     <Grid item xs={12}>
       <Card
@@ -14,7 +18,7 @@ export default function BlankStateCard() {
       >
         <CardContent>
           <Typography variant="h4" align="center">
-            No notes yet. Click the &ldquo;+&rdquo; button above to add a note.
+            {variant === 'no notes' ? `No notes yet. Click the \u201C+\u201D button above to add a note.` : 'No notes match your search.'}
           </Typography>
         </CardContent>
       </Card>

@@ -3,6 +3,7 @@ import { Note, searchNotesForUser } from '@/db/schema/notes';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { Button, Card, CardContent, Grid, IconButton, TextField } from '@mui/material';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 
@@ -10,13 +11,15 @@ interface SearchBarProps {
   onLoadingResults: (loading: boolean) => void;
   onSearchResult: (searchResults: Note[]) => void;
   onClearSearch: () => Promise<void>;
+  searchText: string;
+  setSearchText: (searchText: string) => void;
 }
 
 interface SearchFormValues {
   searchText?: string;
 }
 
-export default function SearchBar({ onLoadingResults, onSearchResult, onClearSearch }: SearchBarProps) {
+export default function SearchBar({ onLoadingResults, onSearchResult, onClearSearch, searchText, setSearchText }: SearchBarProps) {
   const { loadingUser, user } = useLoggedInUser();
 
   const validationSchema = Yup.object().shape({
@@ -30,7 +33,7 @@ export default function SearchBar({ onLoadingResults, onSearchResult, onClearSea
     ...formOptions,
     mode: 'all',
     defaultValues: {
-      searchText: '',
+      searchText,
     }
   });
 
@@ -43,16 +46,22 @@ export default function SearchBar({ onLoadingResults, onSearchResult, onClearSea
       return;
     }
 
+    setSearchText(searchText);
     const searchResult = await searchNotesForUser(user.id, searchText);
-
+    
     onSearchResult(searchResult);
     onLoadingResults(false);
   };
 
   const onReset = async () => {
+    setSearchText('');
     await onClearSearch();
     reset();
   };
+
+  useEffect(() => {
+    reset({ searchText });
+  }, [reset, searchText]);
 
   return (
     <Card>

@@ -85,6 +85,7 @@ export default function Notes() {
   const [addNoteDialogOpen, setAddNoteDialogOpen] = useState(false);
   const [notes, setNotes] = useState([] as Note[]);
   const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState('');
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -197,6 +198,8 @@ export default function Notes() {
             onLoadingResults={setLoading}
             onClearSearch={getNotes}
             onSearchResult={setNotes}
+            searchText={searchText}
+            setSearchText={setSearchText}
           />
 
           <Box sx={{ mb: 4 }} />
@@ -207,7 +210,9 @@ export default function Notes() {
                 <LoadingCards />
               ) : notes.length === 0
                 ? (
-                  <BlankStateCard />
+                  <BlankStateCard
+                    variant={searchText ? 'empty search' : 'no notes'}
+                  />
                 ) : (
                   notes.map(note => (
                     <Grid key={note.id} item xs={6} md={4} lg={3}>
@@ -228,6 +233,7 @@ export default function Notes() {
         handleClose={() => setAddNoteDialogOpen(false)}
         handleUpsertNote={() => {
           setAddNoteDialogOpen(false);
+          setSearchText('');
           getNotes();
         }}
         isOpen={addNoteDialogOpen}
